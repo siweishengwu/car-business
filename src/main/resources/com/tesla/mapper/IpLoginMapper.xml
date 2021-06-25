@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tesla.mapper.IpLoginMapper" >
+  <resultMap id="BaseResultMap" type="com.tesla.domain.IpLogin" >
+    <id column="id" property="id" />
+    <result column="username" property="username" />
+    <result column="ip" property="ip" />
+    <result column="time" property="time" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" >
+    delete from ip_login
+    where id = #{id}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into ip_login (username, ip, time)
+    values (#{username}, #{ip}, #{time})
+  </insert>
+  <update id="updateByPrimaryKey" >
+    update ip_login
+    set username = #{username},
+      ip = #{ip},
+      time = #{time}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select id, username, ip, time
+    from ip_login
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, username, ip, time
+    from ip_login
+  </select>
+    <select id="selectForList" resultType="com.tesla.domain.IpLogin">
+      select id, username, ip, time
+      from ip_login
+    <where>
+      <if test="username != null and username != ''">
+        and username like concat('%',#{username},'%')
+      </if>
+      <if test="ip != null and ip != ''">
+        and ip like concat('%',#{ip},'%')
+      </if>
+    </where>
+    </select>
+  <select id="tip" resultType="com.tesla.domain.IpLogin">
+    select ip,time from ip_login
+    where username = #{username}
+    order by id desc
+    LIMIT 1,1
+  </select>
+</mapper>

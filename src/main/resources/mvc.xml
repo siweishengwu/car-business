@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--IoC DI 注解解析器,配置 扫描器-->
+    <context:component-scan base-package="com.tesla.web"/>
+
+    <!--    配置MVC解析器,时间注解,JSON-->
+    <mvc:annotation-driven/>
+
+    <!--    处理静态资源-->
+    <mvc:default-servlet-handler/>
+
+    <!-- 注册 FreeMarker 配置类 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <!-- 配置 FreeMarker 的文件编码 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+        <!-- 配置 FreeMarker 寻找模板的路径 -->
+        <property name="templateLoaderPath" value="/WEB-INF/views/"/>
+        <property name="freemarkerSettings">
+            <props>
+                <!-- 兼容模式，配了后不需要另外处理空值问题，时间格式除外 -->
+                <prop key="classic_compatible">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 注册 FreeMarker 视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <!-- 是否把 session 中的 attribute 复制到模板的属性集中，可以使用 FreeMarker 的表达式来访问并显示 -->
+        <property name="exposeSessionAttributes" value="true"/>
+        <!-- 配置逻辑视图自动添加的后缀名 -->
+        <property name="suffix" value=".ftl"/>
+        <!-- 配置响应头中 Content-Type -->
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+    </bean>
+
+    <!--    配置登录拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/static/**"/>
+            <mvc:exclude-mapping path="/index/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <mvc:exclude-mapping path="/messageBoard/**"/>
+            <bean class="com.tesla.web.interceptor.CheckLoginInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/static/**"/>
+            <mvc:exclude-mapping path="/index/**"/>
+            <mvc:exclude-mapping path="/login"/>
+            <mvc:exclude-mapping path="/messageBoard/**"/>
+            <bean class="com.tesla.web.interceptor.CheckPermissionInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!--    引入applicationContext.xml-->
+    <import resource="classpath:applicationContext.xml"/>
+
+    <!-- 文件解析器   -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="10240000000"/>
+    </bean>
+</beans>

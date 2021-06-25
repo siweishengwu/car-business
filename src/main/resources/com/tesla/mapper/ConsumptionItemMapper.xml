@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tesla.mapper.ConsumptionItemMapper" >
+  <resultMap id="BaseResultMap" type="com.tesla.domain.ConsumptionItem" >
+    <id column="id" property="id" />
+    <result column="amount" property="amount" />
+    <result column="pay_amount" property="payAmount" />
+    <result column="discount_amount" property="discountAmount" />
+    <result column="create_user_id" property="createUserId" />
+    <result column="create_time" property="createTime" />
+    <result column="cno" property="cno" />
+
+
+    <result column="c_id" property="category.id" />
+    <result column="c_name" property="category.name" />
+    <result column="ca_id" property="categoryItem.id" />
+    <result column="ca_name" property="categoryItem.name" />
+    <result column="pt_id" property="payType.id" />
+    <result column="pt_name" property="payType.name" />
+
+  </resultMap>
+  <delete id="deleteByPrimaryKey" >
+    delete from consumption_item
+    where id = #{id}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into consumption_item (category_id, category_item_id, pay_type_id, amount, pay_amount, 
+      discount_amount, create_user_id, create_time, cno)
+    values (#{category.id}, #{categoryItem.id}, #{payType.id}, #{amount}, #{payAmount},
+      #{discountAmount}, #{createUserId}, #{createTime}, #{cno})
+  </insert>
+  <update id="updateByPrimaryKey" >
+    update consumption_item
+    set category_id = #{category.id},
+      category_item_id = #{categoryItem.id},
+      pay_type_id = #{payType.id},
+      amount = #{amount},
+      pay_amount = #{payAmount},
+      discount_amount = #{discountAmount},
+      create_user_id = #{createUserId},
+      create_time = #{createTime},
+      cno = #{cno}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select id, category_id, category_item_id, pay_type_id, amount, pay_amount, discount_amount, 
+    create_user_id, create_time, cno
+    from consumption_item
+    where id = #{id}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, category_id, category_item_id, pay_type_id, amount, pay_amount, discount_amount, 
+    create_user_id, create_time, cno
+    from consumption_item
+  </select>
+    <select id="selectForList" resultMap="BaseResultMap">
+      select id, category_id, category_item_id, pay_type_id, amount, pay_amount, discount_amount,
+             create_user_id, create_time, cno
+      from consumption_item
+    </select>
+
+
+  <select id="selectByCno" resultMap="BaseResultMap">
+    select ci.id, ci.category_id, ci.category_item_id, ci.pay_type_id, ci.amount, ci.pay_amount, ci.discount_amount,
+           ci.create_user_id, ci.create_time, cno,
+
+           c.id as c_id , c.name as c_name,
+           ca.id as ca_id,ca.name as ca_name,
+           pt.id as pt_id,pt.name as pt_name
+    from consumption_item ci
+           JOIN system_dictionary c ON ci.category_id = c.id
+           join system_dictionary ca on ci.category_item_id = ca.id
+           JOIN system_dictionary pt on ci.pay_type_id = pt.id
+    where ci.cno = #{cno}
+  </select>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tesla.mapper.MessageReplyMapper">
+    <resultMap id="BaseResultMap" type="com.tesla.domain.MessageReply">
+        <id column="id" property="id"/>
+        <result column="content" property="content"/>
+        <result column="message_id" property="messageId"/>
+        <result column="create_time" property="createTime"/>
+
+
+        <result column="e_id" property="replyUser.id"/>
+        <result column="e_name" property="replyUser.name"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey">
+        delete
+        from message_reply
+        where id = #{id}
+    </delete>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into message_reply (content, message_id, reply_user_id, create_time)
+        values (#{content}, #{messageId}, #{replyUser.id}, #{createTime})
+    </insert>
+    <update id="updateByPrimaryKey">
+        update message_reply
+        set content       = #{content},
+            message_id    = #{messageId},
+            reply_user_id = #{replyUser.id},
+            create_time   = #{createTime}
+        where id = #{id}
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select id, content, message_id, reply_user_id, create_time
+        from message_reply
+        where id = #{id}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select id, content, message_id, reply_user_id, create_time
+        from message_reply
+    </select>
+    <select id="selectForList" resultType="com.tesla.domain.MessageReply">
+        select id, content, message_id, reply_user_id, create_time
+        from message_reply
+    </select>
+    <select id="selectAllById" resultMap="BaseResultMap">
+        select r.id, r.content, r.message_id, r.reply_user_id, r.create_time,
+               e.id as e_id,e.name as e_name
+        from message_reply r
+                 LEFT JOIN message_board b ON b.id = r.message_id
+                 LEFT JOIN employee e ON r.id = e.id
+        where r.message_id = #{id}
+    </select>
+</mapper>

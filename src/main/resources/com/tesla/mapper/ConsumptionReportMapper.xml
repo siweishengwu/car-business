@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tesla.mapper.ConsumptionReportMapper">
+
+
+    <select id="selectConsumptionReportVO" resultType="com.tesla.vo.ConsumptionReportVO" >
+        select ${groupTypeName} as groupType,
+               COUNT(*) as totalCount,
+               sum(c.total_amount) as totalAmount,
+               SUM(c.discount_amount) as totalDiscountAmount,
+               SUM(c.pay_amount) as totalPayAmount
+        FROM consumption c
+            join business b
+                on c.business_id = b.id
+        <where>
+            c.status != 0
+            <if test="businessId != null">
+                and c.business_id =#{businessId}
+            </if>
+            <if test="beginCreateTime != null">
+                and c.create_time >= #{beginCreateTime}
+            </if>
+            <if test="endCreateTime != null">
+                and c.create_time &lt;= #{endCreateTime}
+            </if>
+            <choose>
+                <when test="appointmentType == true">
+                    and c.appointment_ano is not null
+                </when>
+                <when test="appointmentType == false">
+                    and c.appointment_ano is  null
+                </when>
+            </choose>
+        </where>
+        GROUP BY ${groupTypeName}
+    </select>
+</mapper>

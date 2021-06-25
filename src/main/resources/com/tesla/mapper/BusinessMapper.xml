@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tesla.mapper.BusinessMapper" >
+  <resultMap id="BaseResultMap" type="com.tesla.domain.Business" >
+    <id column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="intro" property="intro" />
+    <result column="scope" property="scope" />
+    <result column="tel" property="tel" />
+    <result column="address" property="address" />
+    <result column="open_date" property="openDate" />
+    <result column="license_img" property="licenseImg" />
+    <result column="license_number" property="licenseNumber" />
+    <result column="legal_name" property="legalName" />
+    <result column="legal_tel" property="legalTel" />
+    <result column="legal_idcard" property="legalIdcard" />
+    <result column="main_store" property="mainStore" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" >
+    delete from business
+    where id = #{id}
+  </delete>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
+    insert into business (name, intro, scope, tel, address, open_date, license_img, 
+      license_number, legal_name, legal_tel, legal_idcard, main_store)
+    values (#{name}, #{intro}, #{scope}, #{tel}, #{address}, #{openDate}, #{licenseImg}, 
+      #{licenseNumber}, #{legalName}, #{legalTel}, #{legalIdcard}, #{mainStore})
+  </insert>
+  <update id="updateByPrimaryKey" >
+    update business
+    set name = #{name},
+      intro = #{intro},
+      scope = #{scope},
+      tel = #{tel},
+      address = #{address},
+      open_date = #{openDate},
+      license_img = #{licenseImg},
+      license_number = #{licenseNumber},
+      legal_name = #{legalName},
+      legal_tel = #{legalTel},
+      legal_idcard = #{legalIdcard},
+      main_store = #{mainStore}
+    where id = #{id}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" >
+    select id, name, intro, scope, tel, address, open_date, license_img, license_number, 
+    legal_name, legal_tel, legal_idcard, main_store
+    from business
+    where id = #{id}
+  </select>
+  <sql id="where_sql">
+    <where>
+      <if test="name != null and name != ''">
+          and name like concat('%',#{name},'%')
+      </if>
+      <if test="scope !=null and scope != ''">
+         and scope like concat('%',#{scope},'%')
+      </if>
+      <if test="tel != null and tel != ''">
+        and tel like concat('%',#{tel},'%')
+      </if>
+      <if test="legalName != null and legalName != ''">
+        and legal_Name like concat('%',#{legalName},'%')
+      </if>
+      <if test="beginOpenDate != null">
+        and open_date >= #{beginOpenDate}
+      </if>
+      <if test="endOpenDate != null">
+        and open_date &lt;= #{endOpenDate}
+      </if>
+    </where>
+  </sql>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, name, intro, scope, tel, address, open_date, license_img, license_number, 
+    legal_name, legal_tel, legal_idcard, main_store
+    from business
+  </select>
+  <select id="selectForList"  resultMap="BaseResultMap">
+    select id, name, intro, scope, tel, address, open_date, license_img, license_number,
+           legal_name, legal_tel, legal_idcard, main_store
+    from business
+    <include refid="where_sql"></include>
+  </select>
+  <select id="selectMainBusiness" resultType="com.tesla.domain.Business">
+    select id, name, intro, scope, tel, address, open_date, license_img, license_number,
+           legal_name, legal_tel, legal_idcard, main_store
+    from business
+    where main_store = true;
+  </select>
+</mapper>
